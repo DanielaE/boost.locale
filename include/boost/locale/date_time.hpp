@@ -967,6 +967,7 @@ namespace boost {
             ///
             date_time const &end() const { return e_; }
         private:
+            date_time_duration& operator=(const date_time_duration&);
             date_time const &s_;
             date_time const &e_;
         };

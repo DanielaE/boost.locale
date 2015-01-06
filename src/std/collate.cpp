@@ -12,6 +12,10 @@
 #include <boost/locale/encoding.hpp>
 #include "all_generator.hpp"
 
+#if defined(_MSC_VER)
+#pragma warning(disable: 4127) // conditional expression is constant
+#endif
+
 namespace boost {
 namespace locale {
 namespace impl_std {

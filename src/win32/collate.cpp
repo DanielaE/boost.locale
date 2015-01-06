@@ -14,6 +14,10 @@
 #include "api.hpp"
 #include "../shared/mo_hash.hpp"
 
+#ifdef BOOST_MSVC
+#  pragma warning(disable: 4127) // conditional expression is constant
+#endif
+
 namespace boost {
 namespace locale {
 namespace impl_win {

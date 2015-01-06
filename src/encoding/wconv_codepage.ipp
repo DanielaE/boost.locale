@@ -126,7 +126,7 @@ namespace impl {
     {
         if(begin==end)
             return;
-        int n = MultiByteToWideChar(codepage,MB_ERR_INVALID_CHARS,begin,end-begin,0,0);
+        int n = MultiByteToWideChar(codepage,MB_ERR_INVALID_CHARS,begin,static_cast<int>(end-begin),0,0);
         if(n == 0) {
             if(do_skip) {
                 multibyte_to_wide_one_by_one(codepage,begin,end,buf);
@@ -136,7 +136,7 @@ namespace impl {
         }
 
         buf.resize(n,0);
-        if(MultiByteToWideChar(codepage,MB_ERR_INVALID_CHARS,begin,end-begin,&buf.front(),buf.size())==0)
+        if(MultiByteToWideChar(codepage,MB_ERR_INVALID_CHARS,begin,static_cast<int>(end-begin),&buf.front(),static_cast<int>(buf.size()))==0)
             throw conversion_error();
     }
 
@@ -149,10 +149,10 @@ namespace impl {
         char subst_char = 0;
         char *subst_char_ptr = codepage == 65001 || codepage == 65000 ? 0 : &subst_char;
         
-        int n = WideCharToMultiByte(codepage,0,begin,end-begin,0,0,subst_char_ptr,substitute_ptr);
+        int n = WideCharToMultiByte(codepage,0,begin,static_cast<int>(end-begin),0,0,subst_char_ptr,substitute_ptr);
         buf.resize(n);
         
-        if(WideCharToMultiByte(codepage,0,begin,end-begin,&buf[0],n,subst_char_ptr,substitute_ptr)==0)
+        if(WideCharToMultiByte(codepage,0,begin,static_cast<int>(end-begin),&buf[0],n,subst_char_ptr,substitute_ptr)==0)
             throw conversion_error();
         if(substitute) {
             if(do_skip) 
@@ -412,7 +412,7 @@ namespace impl {
             std::vector<wchar_t> buffer; // if needed
             if(begin==end)
                 return std::string();
-            if(validate_utf16(begin,end-begin)) {
+            if(validate_utf16(begin,static_cast<int>(end-begin))) {
                 wbegin =  reinterpret_cast<wchar_t const *>(begin);
                 wend = reinterpret_cast<wchar_t const *>(end);
             }
@@ -421,7 +421,7 @@ namespace impl {
                         throw conversion_error();
                 }
                 else {
-                    clean_invalid_utf16(begin,end-begin,buffer);
+                    clean_invalid_utf16(begin,static_cast<int>(end-begin),buffer);
                     if(!buffer.empty()) {
                         wbegin = &buffer[0];
                         wend = wbegin + buffer.size();
