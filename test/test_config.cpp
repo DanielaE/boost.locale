@@ -19,6 +19,9 @@
 #include <unicode/uversion.h>
 #endif
 
+#ifdef BOOST_MSVC
+#  pragma warning(disable : 4996) // This function or variable may be unsafe
+#endif
 
 char const *env(char const *s)
 {

@@ -11,6 +11,10 @@
 #include <sstream>
 #include <locale>
 
+#ifdef _MSC_VER
+#  pragma warning(disable: 4702) // unreachable code
+#endif
+
 int counter=0;
 int imbued=0;
 struct propery {

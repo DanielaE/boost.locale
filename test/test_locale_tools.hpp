@@ -9,6 +9,10 @@
 #ifndef BOOST_LOCLAE_TEST_LOCALE_TOOLS_HPP
 #define BOOST_LOCLAE_TEST_LOCALE_TOOLS_HPP
 
+#ifdef BOOST_MSVC
+#  pragma warning(disable : 4127) // conditional expression is constant
+#endif
+
 #include <boost/locale/encoding.hpp>
 
 template<typename Char>
