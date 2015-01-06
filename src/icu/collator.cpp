@@ -45,8 +45,8 @@ namespace boost {
                                         char const *b2,char const *e2,
                                         UErrorCode &status) const
                 {
-                    icu::StringPiece left (b1,e1-b1);
-                    icu::StringPiece right(b2,e2-b2);
+                    icu::StringPiece left (b1,static_cast<int32_t>(e1-b1));
+                    icu::StringPiece right(b2,static_cast<int32_t>(e2-b2));
                     return get_collator(level)->compareUTF8(left,right,status);
 
                 }
@@ -93,10 +93,10 @@ namespace boost {
                     std::vector<uint8_t> tmp;
                     tmp.resize(str.length());
                     icu::Collator *collate = get_collator(level);
-                    int len = collate->getSortKey(str,&tmp[0],tmp.size());
+                    int len = collate->getSortKey(str,&tmp[0],static_cast<int32_t>(tmp.size()));
                     if(len > int(tmp.size())) {
                         tmp.resize(len);
-                        collate->getSortKey(str,&tmp[0],tmp.size());
+                        collate->getSortKey(str,&tmp[0],static_cast<int32_t>(tmp.size()));
                     }
                     else 
                         tmp.resize(len);

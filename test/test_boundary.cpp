@@ -118,7 +118,7 @@ void test_word_container(Iterator begin,Iterator end,
                 }
                 for(i=0,p=map.end();i<chunks.size();i++){
                     --p;
-                    unsigned index = chunks.size() - i - 1;
+                    unsigned index = static_cast<unsigned>(chunks.size() - i - 1);
                     TEST(p->str()==chunks[index]);
                     TEST(p->rule() == unsigned(masks[index]));
                 }
@@ -154,7 +154,7 @@ void test_word_container(Iterator begin,Iterator end,
                 
                 for(i=0,p=map.end();i<chunks.size();i++){
                     --p;
-                    unsigned index = chunks.size() - i - 1;
+                    unsigned index = static_cast<unsigned>(chunks.size() - i - 1);
                     TEST(p->str()==fchunks[index]);
                     TEST(p->rule() == unsigned(masks[index]));
                 }
@@ -344,7 +344,7 @@ void run_word(std::string *original,int *none,int *num,int *word,int *kana,int *
     for(int i=0;!original[i].empty();i++) {
         chunks.push_back(to_correct_string<Char>(original[i],l));
         test_string+=chunks.back();
-        pos.push_back(test_string.size());
+        pos.push_back(static_cast<int>(test_string.size()));
         masks.push_back(
               ( none ? none[i]*15 : 0)
             | ( num  ? ((num[i]*15)  << 4) : 0) 

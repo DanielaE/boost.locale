@@ -15,6 +15,10 @@
 #include <cstdlib>
 #include <string>
 
+#ifdef _MSC_VER
+#  pragma warning(disable : 4127) // conditional expression is constant
+#endif
+
 int error_counter=0;
 int test_counter=0;
 

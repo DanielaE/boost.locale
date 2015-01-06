@@ -78,7 +78,7 @@ private:
             return out;
         }
         else {
-            std::wstring cur = wcsfmon_l(val,lc_);
+            std::wstring cur = wcsfmon_l(static_cast<double>(val),lc_);
             return write_it(out,cur);
         }
     }
@@ -117,6 +117,10 @@ private:
     winlocale lc_;
 };
 
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable : 4127) // conditional expression is constant
+#endif
 
 template<typename CharType>
 class num_punct_win : public std::numpunct<CharType> {
@@ -174,6 +178,10 @@ private:
     string_type thousands_sep_;
     std::string grouping_;
 };
+
+#ifdef BOOST_MSVC
+#  pragma warning(pop)
+#endif
 
 template<typename CharType>
 std::locale create_formatting_impl(std::locale const &in,winlocale const &lc)

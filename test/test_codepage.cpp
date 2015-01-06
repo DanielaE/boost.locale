@@ -15,6 +15,9 @@
 #include "test_locale.hpp"
 #include "test_locale_tools.hpp"
 
+#ifdef BOOST_MSVC
+#  pragma warning(disable: 4309) // truncation of constant value
+#endif
 
 #ifndef BOOST_LOCALE_NO_POSIX_BACKEND
 # ifdef __APPLE__

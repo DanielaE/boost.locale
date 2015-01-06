@@ -37,8 +37,8 @@ boost::mutex &lcid_table_mutex()
 
 table_type &real_lcid_table()
 {
-    static table_type table;
-    return table;
+    static table_type table_;
+    return table_;
 }
 
 BOOL CALLBACK proc(char *s)

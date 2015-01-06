@@ -20,7 +20,9 @@
 #endif
 
 #include "test_locale_tools.hpp"
-
+#ifdef BOOST_MSVC
+#  pragma warning(disable : 4996) // This function or variable may be unsafe
+#endif
 
 char const *env(char const *s)
 {
