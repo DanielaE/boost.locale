@@ -119,11 +119,11 @@ namespace impl_icu {
         {
                 std::vector<char> buf((end-begin)*11/10+1);
                 UErrorCode err=U_ZERO_ERROR;
-                int size = func(map_,&buf.front(),buf.size(),begin,end-begin,&err);
+                int size = func(map_,&buf.front(),static_cast<int32_t>(buf.size()),begin,static_cast<int32_t>(end-begin),&err);
                 if(err == U_BUFFER_OVERFLOW_ERROR) {
                     err = U_ZERO_ERROR;
                     buf.resize(size+1);
-                    size = func(map_,&buf.front(),buf.size(),begin,end-begin,&err);
+                    size = func(map_,&buf.front(),static_cast<int32_t>(buf.size()),begin,static_cast<int32_t>(end-begin),&err);
                 }
                 check_and_throw_icu_error(err);
                 return std::string(&buf.front(),size);

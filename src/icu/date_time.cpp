@@ -227,8 +227,8 @@ namespace impl_icu {
                 check_and_throw_dt(err);
             }
             else {
-                posix_time p = other_ptr->get_time();
-                other_time = p.seconds * 1000.0 + p.nanoseconds / 1000000.0;
+                posix_time pt = other_ptr->get_time();
+                other_time = pt.seconds * 1000.0 + pt.nanoseconds / 1000000.0;
             }
 
             int diff = self->fieldDifference(other_time,to_icu(p),err);

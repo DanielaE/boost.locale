@@ -18,6 +18,10 @@
 #include <algorithm>
 #include "predefined_formatters.hpp"
 
+#ifdef BOOST_MSVC
+#pragma warning(disable:4127)
+#endif
+
 namespace boost {
 namespace locale {
 namespace impl_icu {
@@ -334,7 +338,7 @@ private:
         if(v < 0 && value_limits::is_signed == false)
             return false;
         
-        static const CastedType max_val = value_limits::max();
+        static const CastedType max_val = static_cast<CastedType>(value_limits::max());
 
         if(sizeof(CastedType) > sizeof(ValueType) && v > max_val)
             return false;
