@@ -283,7 +283,7 @@ namespace { // anon
             else if(strncmp(ptr,"==",2)==0) { pos+=2; next_tocken=EQ; }
             else if(strncmp(ptr,"!=",2)==0) { pos+=2; next_tocken=NEQ; }
             else if(*ptr=='n') { pos++; next_tocken=VARIABLE; }
-            else if(isdigit(*ptr)) { int_value=strtol(text+pos,&tmp_ptr,0); pos=tmp_ptr-text; next_tocken=NUM; }
+            else if(isdigit(*ptr)) { int_value=strtol(text+pos,&tmp_ptr,0); pos=static_cast<int>(tmp_ptr-text); next_tocken=NUM; }
             else if(*ptr=='\0') { next_tocken=0; }
             else { next_tocken=*ptr; pos++; }
         }
