@@ -23,9 +23,8 @@
 
 #ifdef BOOST_LOCALE_UNORDERED_CATALOG
 #include <boost/unordered_map.hpp>
-#else
-#include <map>
 #endif
+#include <map>
 
 #include <iostream>
 
@@ -437,8 +436,8 @@ namespace boost {
                         while(*e)
                             e++;
                         state = pj_winberger_hash::update_state(state,
-                                    static_cast<char const *>(p),
-                                    static_cast<char const *>(e));
+                                    reinterpret_cast<char const *>(p),
+                                    reinterpret_cast<char const *>(e));
                         state = pj_winberger_hash::update_state(state,'\4');
                     }
                     p = msg.key();
@@ -446,14 +445,14 @@ namespace boost {
                     while(*e)
                         e++;
                     state = pj_winberger_hash::update_state(state,
-                                static_cast<char const *>(p),
-                                static_cast<char const *>(e));
+                                reinterpret_cast<char const *>(p),
+                                reinterpret_cast<char const *>(e));
                     return state;
                 }
             };
             
            
-            // By default for wide types the conversion is not requiredyy
+            // By default for wide types the conversion is not required
             template<typename CharType>
             CharType const *runtime_conversion(CharType const *msg,
                                                 std::basic_string<CharType> &/*buffer*/,
