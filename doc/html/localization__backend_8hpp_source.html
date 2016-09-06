@@ -127,9 +127,9 @@ $(document).ready(function(){initNavTree('localization__backend_8hpp_source.html
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            ~<a class="code" href="classboost_1_1locale_1_1localization__backend__manager.html">localization_backend_manager</a>();</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            std::auto_ptr&lt;localization_backend&gt; <span class="keyword">get</span>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            std::unique_ptr&lt;localization_backend&gt; <span class="keyword">get</span>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            <span class="keywordtype">void</span> add_backend(std::string <span class="keyword">const</span> &amp;name,std::auto_ptr&lt;localization_backend&gt; backend);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            <span class="keywordtype">void</span> add_backend(std::string <span class="keyword">const</span> &amp;name,std::unique_ptr&lt;localization_backend&gt; backend);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;            <span class="keywordtype">void</span> remove_all_backends();</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            </div>
@@ -141,7 +141,7 @@ $(document).ready(function(){initNavTree('localization__backend_8hpp_source.html
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <span class="keyword">static</span> <a class="code" href="classboost_1_1locale_1_1localization__backend__manager.html">localization_backend_manager</a> global();</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            <span class="keyword">class </span>impl;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            std::auto_ptr&lt;impl&gt; pimpl_;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            std::unique_ptr&lt;impl&gt; pimpl_;</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        };</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    } <span class="comment">// locale</span></div>
