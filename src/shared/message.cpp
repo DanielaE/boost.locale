@@ -627,7 +627,7 @@ namespace boost {
                     key_conversion_required_ =  sizeof(CharType) == 1 
                                                 && compare_encodings(locale_encoding,key_encoding)!=0;
 
-                    std::auto_ptr<mo_file> mo;
+                    std::unique_ptr<mo_file> mo;
 
                     if(callback) {
                         std::vector<char> vfile = callback(file_name,locale_encoding);
@@ -651,13 +651,12 @@ namespace boost {
                         throw std::runtime_error("Invalid mo-format, encoding is not specified");
 
                     if(!plural.empty()) {
-                        std::auto_ptr<lambda::plural> ptr=lambda::compile(plural.c_str());
-                        plural_forms_[id] = ptr;
+                        plural_forms_[id] = lambda::compile(plural.c_str());
                     }
 
                     if( mo_useable_directly(mo_encoding,*mo) )
                     {
-                        mo_catalogs_[id]=mo;
+                        mo_catalogs_[id]=std::move(mo);
                     }
                     else {
                         converter<CharType> cvt_value(locale_encoding,mo_encoding);

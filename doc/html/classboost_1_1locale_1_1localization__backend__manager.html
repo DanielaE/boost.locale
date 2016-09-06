@@ -93,10 +93,10 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:af506ec1809f2f67c71f590862f63eeab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e602229ef95ea60834fdea95110bf19"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1locale_1_1localization__backend__manager.html#a7e602229ef95ea60834fdea95110bf19">~localization_backend_manager</a> ()</td></tr>
 <tr class="separator:a7e602229ef95ea60834fdea95110bf19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89d377e934af287573212581cab70dd6"><td class="memItemLeft" align="right" valign="top">std::auto_ptr<br class="typebreak"/>
+<tr class="memitem:a89d377e934af287573212581cab70dd6"><td class="memItemLeft" align="right" valign="top">std::unique_ptr<br class="typebreak"/>
 &lt; <a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1locale_1_1localization__backend__manager.html#a89d377e934af287573212581cab70dd6">get</a> () const </td></tr>
 <tr class="separator:a89d377e934af287573212581cab70dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3c6eca5cc54c5161fef3bfd14509c64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1locale_1_1localization__backend__manager.html#ae3c6eca5cc54c5161fef3bfd14509c64">add_backend</a> (std::string const &amp;name, std::auto_ptr&lt; <a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a> &gt; backend)</td></tr>
+<tr class="memitem:ae3c6eca5cc54c5161fef3bfd14509c64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1locale_1_1localization__backend__manager.html#ae3c6eca5cc54c5161fef3bfd14509c64">add_backend</a> (std::string const &amp;name, std::unique_ptr&lt; <a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a> &gt; backend)</td></tr>
 <tr class="separator:ae3c6eca5cc54c5161fef3bfd14509c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c9841c83aa85dbf8f61b2e17732499a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1locale_1_1localization__backend__manager.html#a8c9841c83aa85dbf8f61b2e17732499a">remove_all_backends</a> ()</td></tr>
 <tr class="separator:a8c9841c83aa85dbf8f61b2e17732499a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,7 +178,7 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::auto_ptr&lt; <a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a> &gt;&#160;</td>
           <td class="paramname"><em>backend</em>&#160;</td>
         </tr>
         <tr>
@@ -198,7 +198,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::auto_ptr&lt;<a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a>&gt; boost::locale::localization_backend_manager::get </td>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classboost_1_1locale_1_1localization__backend.html">localization_backend</a>&gt; boost::locale::localization_backend_manager::get </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
