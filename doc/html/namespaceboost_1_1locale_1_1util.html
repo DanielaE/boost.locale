@@ -92,11 +92,11 @@ Functions</h2></td></tr>
 <tr class="memitem:a8322299021a4af3cdbb8b31e775e77f4"><td class="memItemLeft" align="right" valign="top">std::locale&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#a8322299021a4af3cdbb8b31e775e77f4">create_info</a> (std::locale const &amp;in, std::string const &amp;name)</td></tr>
 <tr class="memdesc:a8322299021a4af3cdbb8b31e775e77f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Installs information facet to locale in based on locale name <em>name</em>.  <a href="#a8322299021a4af3cdbb8b31e775e77f4">More...</a><br/></td></tr>
 <tr class="separator:a8322299021a4af3cdbb8b31e775e77f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8e8480ddadc3e972aeb4d468446db64"><td class="memItemLeft" align="right" valign="top">std::auto_ptr&lt; <a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#aa8e8480ddadc3e972aeb4d468446db64">create_utf8_converter</a> ()</td></tr>
+<tr class="memitem:aa8e8480ddadc3e972aeb4d468446db64"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#aa8e8480ddadc3e972aeb4d468446db64">create_utf8_converter</a> ()</td></tr>
 <tr class="separator:aa8e8480ddadc3e972aeb4d468446db64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79624ad8d782ad41d5edf90b6c830631"><td class="memItemLeft" align="right" valign="top">std::auto_ptr&lt; <a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#a79624ad8d782ad41d5edf90b6c830631">create_simple_converter</a> (std::string const &amp;encoding)</td></tr>
+<tr class="memitem:a79624ad8d782ad41d5edf90b6c830631"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#a79624ad8d782ad41d5edf90b6c830631">create_simple_converter</a> (std::string const &amp;encoding)</td></tr>
 <tr class="separator:a79624ad8d782ad41d5edf90b6c830631"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e6728910dc947c3062c6bfd28b70fc4"><td class="memItemLeft" align="right" valign="top">std::locale&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#a3e6728910dc947c3062c6bfd28b70fc4">create_codecvt</a> (std::locale const &amp;in, std::auto_ptr&lt; <a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a> &gt; cvt, <a class="el" href="namespaceboost_1_1locale.html#a8c993aaf15e683e97d062560ccf914d8">character_facet_type</a> type)</td></tr>
+<tr class="memitem:a3e6728910dc947c3062c6bfd28b70fc4"><td class="memItemLeft" align="right" valign="top">std::locale&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#a3e6728910dc947c3062c6bfd28b70fc4">create_codecvt</a> (std::locale const &amp;in, std::unique_ptr&lt; <a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a> &gt; cvt, <a class="el" href="namespaceboost_1_1locale.html#a8c993aaf15e683e97d062560ccf914d8">character_facet_type</a> type)</td></tr>
 <tr class="separator:a3e6728910dc947c3062c6bfd28b70fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedf56793c0804295e06cf97300b991f8"><td class="memItemLeft" align="right" valign="top">std::locale&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceboost_1_1locale_1_1util.html#aedf56793c0804295e06cf97300b991f8">create_utf8_codecvt</a> (std::locale const &amp;in, <a class="el" href="namespaceboost_1_1locale.html#a8c993aaf15e683e97d062560ccf914d8">character_facet_type</a> type)</td></tr>
 <tr class="separator:aedf56793c0804295e06cf97300b991f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,7 +119,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::auto_ptr&lt; base_converter &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; base_converter &gt;&#160;</td>
           <td class="paramname"><em>cvt</em>, </td>
         </tr>
         <tr>
@@ -212,7 +212,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::auto_ptr&lt;<a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a>&gt; boost::locale::util::create_simple_converter </td>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a>&gt; boost::locale::util::create_simple_converter </td>
           <td>(</td>
           <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>encoding</em></td><td>)</td>
@@ -221,7 +221,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>This function creates a <em><a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html" title="This class represent a simple stateless converter from UCS-4 and to UCS-4 for each single code point...">base_converter</a></em> that can be used for conversion between single byte character encodings like ISO-8859-1, koi8-r, windows-1255 and Unicode code points,</p>
-<p>If <em>encoding</em> is not supported, empty pointer is returned. You should check if std::auto_ptr&lt;base_converter&gt;::get() != 0 </p>
+<p>If <em>encoding</em> is not supported, empty pointer is returned. You should check if std::unique_ptr&lt;base_converter&gt;::get() != 0 </p>
 
 </div>
 </div>
@@ -257,7 +257,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::auto_ptr&lt;<a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a>&gt; boost::locale::util::create_utf8_converter </td>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classboost_1_1locale_1_1util_1_1base__converter.html">base_converter</a>&gt; boost::locale::util::create_utf8_converter </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
