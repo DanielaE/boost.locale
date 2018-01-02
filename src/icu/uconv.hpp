@@ -58,7 +58,7 @@ namespace impl_icu {
             char const *end=reinterpret_cast<char const *>(ve);
             uconv cvt(charset_,cvt_type_);
             UErrorCode err=U_ZERO_ERROR;
-            icu::UnicodeString tmp(begin,end-begin,cvt.cvt(),err);
+            icu::UnicodeString tmp(begin,static_cast<int32_t>(end-begin),cvt.cvt(),err);
             check_and_throw_icu_error(err);
             return tmp;
         }
@@ -80,7 +80,7 @@ namespace impl_icu {
         size_t cut(icu::UnicodeString const &str,char_type const *begin,char_type const *end,
                         size_t n,size_t from_u=0,size_t from_char=0) const
         {
-            size_t code_points = str.countChar32(from_u,n);
+            size_t code_points = str.countChar32(static_cast<int32_t>(from_u),static_cast<int32_t>(n));
             uconv cvt(charset_,cvt_type_);
             return cvt.cut(code_points,begin+from_char,end);
         }
@@ -131,7 +131,7 @@ namespace impl_icu {
                 res.resize(UCNV_GET_MAX_BYTES_FOR_STRING(length,max_size));
                 char *ptr=reinterpret_cast<char *>(&res[0]);
                 UErrorCode err=U_ZERO_ERROR;
-                int n = ucnv_fromUChars(cvt_,ptr,res.size(),buf,length,&err);
+                int n = ucnv_fromUChars(cvt_,ptr,static_cast<int32_t>(res.size()),buf,length,&err);
                 check_and_throw_icu_error(err);
                 res.resize(n);
                 return res;
@@ -176,7 +176,7 @@ namespace impl_icu {
         
         icu::UnicodeString icu_checked(char_type const *begin,char_type const *end) const
         {
-            icu::UnicodeString tmp(end-begin,0,0); // make inital capacity
+            icu::UnicodeString tmp(static_cast<int32_t>(end-begin),0,0); // make inital capacity
             while(begin!=end) {
                 UChar cl = *begin++;
                 if(U16_IS_SINGLE(cl))
@@ -209,7 +209,7 @@ namespace impl_icu {
         {
             UChar const *begin=reinterpret_cast<UChar const *>(vb);
             UChar const *end=reinterpret_cast<UChar const *>(ve);
-            icu::UnicodeString tmp(begin,end-begin);
+            icu::UnicodeString tmp(begin,static_cast<int32_t>(end-begin));
             return tmp;
 
         }

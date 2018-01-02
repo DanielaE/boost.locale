@@ -20,6 +20,10 @@
 #include "icu_util.hpp"
 #include "uconv.hpp"
 
+#ifdef BOOST_MSVC
+#pragma warning(disable:4127)
+#endif
+
 namespace boost {
 namespace locale {
 namespace boundary {
@@ -58,7 +62,7 @@ index_type map_direct(boundary_type t,icu::BreakIterator *it,int reserve)
             if(err == U_BUFFER_OVERFLOW_ERROR) {
                 buf=&buffer.front();
                 buffer.resize(n,0);
-                n = rbbi->getRuleStatusVec(buf,buffer.size(),err);
+                n = rbbi->getRuleStatusVec(buf,static_cast<int32_t>(buffer.size()),err);
             }
 
             check_and_throw_icu_error(err);
@@ -152,7 +156,7 @@ index_type do_map(boundary_type t,CharType const *begin,CharType const *end,icu:
             if(!ut) throw std::runtime_error("Failed to create UText");
             bi->setText(ut,err);
             check_and_throw_icu_error(err);
-            index_type res=map_direct(t,bi.get(),end-begin);
+            index_type res=map_direct(t,bi.get(),static_cast<int32_t>(end-begin));
             indx.swap(res);
         }
         catch(...) {
