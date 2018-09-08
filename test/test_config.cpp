@@ -96,11 +96,21 @@ int main()
     }
 
     char const *locales_to_check[] = {
-        "en_US.UTF-8", "en_US.ISO8859-1", "English_United States.1252",
-        "he_IL.UTF-8", "he_IL.ISO8859-8", "Hebrew_Israel.1255",
-        "ru_RU.UTF-8", "Russian_Russia.1251",
-        "tr_TR.UTF-8", "Turkish_Turkey.1254",
-        "ja_JP.UTF-8", "ja_JP.SJIS", "Japanese_Japan.932",
+"German_Germany","German_Germany.1252","German_Germany.ISO8859-1",//"German_Germany.UTF-8",
+//"de_DE",
+"de_DE.1252","de_DE.ISO8859-1",//"de_DE.UTF-8",
+"English_United States","English_United States.1252","English_United States.ISO8859-1",//"English_United States.UTF-8",
+//"en_US",
+"en_US.1252","en_US.ISO8859-1",//"en_US.UTF-8",
+//        "en_US.UTF-8", "en_US.ISO8859-1", "English_United States.1252",
+//        "he_IL.UTF-8",
+ "he_IL.ISO8859-8", "Hebrew_Israel.1255",
+//        "ru_RU.UTF-8",
+ "Russian_Russia.1251",
+//        "tr_TR.UTF-8",
+ "Turkish_Turkey.1254",
+//        "ja_JP.UTF-8",
+ "ja_JP.SJIS", "Japanese_Japan.932",
         0
     };
     std::cout << "- Testing locales availability on the operation system:" << std::endl;

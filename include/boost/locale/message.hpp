@@ -18,6 +18,9 @@
 #include <vector>
 #include <set>
 #include <memory>
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+#include <string_view>
+#endif
 #include <boost/locale/formatting.hpp>
 
 // glibc < 2.3.4 declares those as macros if compiled with optimization turned on
@@ -30,23 +33,66 @@
 
 namespace boost {
     namespace locale {
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+        template<typename CharType>
+        struct string_view : public std::basic_string_view<CharType> {
+            typedef CharType char_type;
+            typedef std::basic_string<CharType> string_type;
+            typedef std::basic_string_view<CharType> string_view_type;
+            string_view() = default;
+            string_view(char_type const * p) : string_view_type{ p, p ? std::char_traits<char_type>::length(p) : 0 } {}
+            string_view(char_type const * p, std::size_t l) : string_view_type{ p, l } {}
+            string_view(string_type const & s) : string_view_type{ s } {}
+            template<std::size_t Len>
+            string_view(char_type const (& lit)[Len]) : string_view_type{ &lit, Len - 1 } {}
+            constexpr explicit operator bool() const noexcept { return !this->empty(); }
+        };
+#else
+        template<typename CharType>
+        struct string_view {
+            typedef CharType char_type;
+            typedef std::basic_string<CharType> string_type;
+            string_view() : ptr_(0), len_(0) {}
+            string_view(char_type const * p) : ptr_(p), len_(p ? std::char_traits<char_type>::length(p) : 0) {}
+            string_view(char_type const * p, std::size_t l) : ptr_(p), len_(l) {}
+            template<std::size_t Len>
+            string_view(char_type const (& lit)[Len]) : ptr_(&lit), len_(Len - 1u) {}
+            string_view(string_type const & s) : ptr_(s.data()), len_(s.size()) {}
+            char_type const * data() const { return ptr_; }
+            std::size_t size() const { return len_; }
+            bool empty() const { return !len_; }
+            char_type const * begin() const { return ptr_; }
+            char_type const * end() const { return ptr_ + len_; }
+            explicit operator bool() const { return len_ > 0; }
+        private:
+            char_type const * ptr_;
+            std::size_t len_;
+        };
+#endif
+        template<typename CharType>
+        std::basic_ostream<CharType> &operator<<(std::basic_ostream<CharType> &out,string_view<CharType> msg)
+        {
+            out.write(msg.data(), msg.size());
+            return out;
+        }
+
         ///
-        /// \defgroup message Message Formatting (translation) 
+        /// \defgroup message Message Formatting (translation)
         ///
         ///This module provides message translation functionality, i.e. allow your application to speak native language
         ///
         /// @{
-        /// 
+        ///
 
-        /// \cond INTERNAL 
+        /// \cond INTERNAL
 
         template<typename CharType>
         struct base_message_format: public std::locale::facet
         {
         };
-       
+
         /// \endcond
-       
+
         ///
         /// \brief This facet provides message formatting abilities
         ///
@@ -59,15 +105,15 @@ namespace boost {
             /// Character type
             ///
             typedef CharType char_type;
+            typedef string_view<CharType> view_type;
             ///
             /// String type
             ///
             typedef std::basic_string<CharType> string_type;
-
             ///
             /// Default constructor
             ///
-            message_format(size_t refs = 0) : 
+            message_format(size_t refs = 0) :
                 base_message_format<CharType>(refs)
             {
             }
@@ -80,12 +126,12 @@ namespace boost {
             /// If \a context is NULL it is not considered to be a part of the key
             ///
             /// If a translated string is found, it is returned, otherwise NULL is returned
-            /// 
             ///
-            virtual char_type const *get(int domain_id,char_type const *context,char_type const *id) const = 0;
+            ///
+            virtual view_type get(int domain_id,view_type context,view_type id) const = 0;
             ///
             /// This function returns a pointer to the string for a plural message defined by a \a context
-            /// and identification string \a single_id. 
+            /// and identification string \a single_id.
             ///
             /// If \a context is NULL it is not considered to be a part of the key
             ///
@@ -94,9 +140,9 @@ namespace boost {
             /// number.
             ///
             /// If a translated string is found, it is returned, otherwise NULL is returned
-            /// 
             ///
-            virtual char_type const *get(int domain_id,char_type const *context,char_type const *single_id,int n) const = 0;
+            ///
+            virtual view_type get(int domain_id,view_type context,view_type single_id,int n) const = 0;
 
             ///
             /// Convert a string that defines \a domain to the integer id used by \a get functions
@@ -111,7 +157,7 @@ namespace boost {
             /// Note: for char_type that is char16_t, char32_t and wchar_t it is no-op, returns
             /// msg
             ///
-            virtual char_type const *convert(char_type const *msg,string_type &buffer) const = 0;
+            virtual view_type convert(view_type msg,string_type &buffer) const = 0;
 
 #if defined (__SUNPRO_CC) && defined (_RWSTD_VER)
             std::locale::id& __get_id (void) const { return id; }
@@ -122,19 +168,19 @@ namespace boost {
             }
 
         };
-        
+
         /// \cond INTERNAL
 
         namespace details {
             inline bool is_us_ascii_char(char c)
             {
                 // works for null terminated strings regardless char "signness"
-                return 0<c && c<0x7F; 
+                return 0<c && c<0x7F;
             }
-            inline bool is_us_ascii_string(char const *msg)
+            inline bool is_us_ascii_string(string_view<char> msg)
             {
-                while(*msg) {
-                    if(!is_us_ascii_char(*msg++))
+                for (char c : msg) {
+                    if(!is_us_ascii_char(c))
                         return false;
                 }
                 return true;
@@ -142,7 +188,7 @@ namespace boost {
 
             template<typename CharType>
             struct string_cast_traits {
-                static CharType const *cast(CharType const *msg,std::basic_string<CharType> &/*unused*/)
+                static string_view<CharType> cast(string_view<CharType> msg,std::basic_string<CharType> &/*unused*/)
                 {
                     return msg;
                 }
@@ -150,17 +196,16 @@ namespace boost {
 
             template<>
             struct string_cast_traits<char> {
-                static char const *cast(char const *msg,std::string &buffer)
+                static string_view<char> cast(string_view<char> msg,std::string &buffer)
                 {
                     if(is_us_ascii_string(msg))
                         return msg;
-                    buffer.reserve(strlen(msg));
-                    char c;
-                    while((c=*msg++)!=0) {
+                    buffer.reserve(msg.size());
+                    for (char c : msg) {
                         if(is_us_ascii_char(c))
                             buffer+=c;
                     }
-                    return buffer.c_str();
+                    return buffer;
                 }
             };
         } // details
@@ -171,7 +216,7 @@ namespace boost {
         /// \brief This class represents a message that can be converted to a specific locale message
         ///
         /// It holds the original ASCII string that is queried in the dictionary when converting to the output string.
-        /// The created string may be UTF-8, UTF-16, UTF-32 or other 8-bit encoded string according to the target 
+        /// The created string may be UTF-8, UTF-16, UTF-32 or other 8-bit encoded string according to the target
         /// character type and locale encoding.
         ///
         template<typename CharType>
@@ -180,28 +225,27 @@ namespace boost {
 
             typedef CharType char_type; ///< The character this message object is used with
             typedef std::basic_string<char_type> string_type;   ///< The string type this object can be used with
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+            typedef std::basic_string_view<CharType> string_view_type;
+#endif
             typedef message_format<char_type> facet_type;   ///< The type of the facet the messages are fetched with
+            typedef string_view<CharType> view_type;
 
             ///
             /// Create default empty message
-            /// 
+            ///
             basic_message() :
-                n_(0),
-                c_id_(0),
-                c_context_(0),
-                c_plural_(0)
+                n_(0)
             {
             }
 
             ///
             /// Create a simple message from 0 terminated string. The string should exist
             /// until the message is destroyed. Generally useful with static constant strings
-            /// 
+            ///
             explicit basic_message(char_type const *id) :
                 n_(0),
-                c_id_(id),
-                c_context_(0),
-                c_plural_(0)
+                id_(id)
             {
             }
 
@@ -210,12 +254,11 @@ namespace boost {
             /// until the message is destroyed. Generally useful with static constant strings.
             ///
             /// \a n is the number, \a single and \a plural are singular and plural forms of the message
-            /// 
+            ///
             explicit basic_message(char_type const *single,char_type const *plural,int n) :
                 n_(n),
-                c_id_(single),
-                c_context_(0),
-                c_plural_(plural)
+                id_(single),
+                plural_(plural)
             {
             }
 
@@ -223,12 +266,11 @@ namespace boost {
             /// Create a simple message from 0 terminated strings, with context
             /// information. The string should exist
             /// until the message is destroyed. Generally useful with static constant strings
-            /// 
+            ///
             explicit basic_message(char_type const *context,char_type const *id) :
                 n_(0),
-                c_id_(id),
-                c_context_(context),
-                c_plural_(0)
+                id_(id),
+                context_(context)
             {
             }
 
@@ -237,12 +279,12 @@ namespace boost {
             /// until the message is destroyed. Generally useful with static constant strings.
             ///
             /// \a n is the number, \a single and \a plural are singular and plural forms of the message
-            /// 
+            ///
             explicit basic_message(char_type const *context,char_type const *single,char_type const *plural,int n) :
                 n_(n),
-                c_id_(single),
-                c_context_(context),
-                c_plural_(plural)
+                id_(single),
+                context_(context),
+                plural_(plural)
             {
             }
 
@@ -252,9 +294,6 @@ namespace boost {
             ///
             explicit basic_message(string_type const &id) :
                 n_(0),
-                c_id_(0),
-                c_context_(0),
-                c_plural_(0),
                 id_(id)
             {
             }
@@ -263,12 +302,9 @@ namespace boost {
             /// Create a simple plural form message from strings.
             ///
             /// \a n is the number, \a single and \a plural are single and plural forms of the message
-            /// 
+            ///
             explicit basic_message(string_type const &single,string_type const &plural,int number) :
                 n_(number),
-                c_id_(0),
-                c_context_(0),
-                c_plural_(0),
                 id_(single),
                 plural_(plural)
             {
@@ -279,9 +315,6 @@ namespace boost {
             ///
             explicit basic_message(string_type const &context,string_type const &id) :
                 n_(0),
-                c_id_(0),
-                c_context_(0),
-                c_plural_(0),
                 id_(id),
                 context_(context)
             {
@@ -291,12 +324,9 @@ namespace boost {
             /// Create a simple plural form message from strings.
             ///
             /// \a n is the number, \a single and \a plural are single and plural forms of the message
-            /// 
+            ///
             explicit basic_message(string_type const &context,string_type const &single,string_type const &plural,int number) :
                 n_(number),
-                c_id_(0),
-                c_context_(0),
-                c_plural_(0),
                 id_(single),
                 context_(context),
                 plural_(plural)
@@ -304,51 +334,8 @@ namespace boost {
             }
 
             ///
-            /// Copy an object
-            ///
-            basic_message(basic_message const &other) :
-                n_(other.n_),
-                c_id_(other.c_id_),
-                c_context_(other.c_context_),
-                c_plural_(other.c_plural_),
-                id_(other.id_),
-                context_(other.context_),
-                plural_(other.plural_)
-            {
-            }
-
-            ///
-            /// Assign other message object to this one
-            ///
-            basic_message const &operator=(basic_message const &other)
-            {
-                if(this==&other) {
-                    return *this;
-                }
-                basic_message tmp(other);
-                swap(tmp);
-                return *this;
-            }
-
-            ///
-            /// Swap two message objects
-            ///
-            void swap(basic_message &other)
-            {
-                std::swap(n_,other.n_);
-                std::swap(c_id_,other.c_id_);
-                std::swap(c_context_,other.c_context_);
-                std::swap(c_plural_,other.c_plural_);
-
-                id_.swap(other.id_);
-                context_.swap(other.context_);
-                plural_.swap(other.plural_);
-            }
-
-            ///
             /// Message class can be explicitly converted to string class
             ///
-
             operator string_type () const
             {
                 return str();
@@ -359,10 +346,9 @@ namespace boost {
             ///
             string_type str() const
             {
-                std::locale loc;
-                return str(loc,0);
+                return str(std::locale(),0);
             }
-            
+
             ///
             /// Translate message to a string in the locale \a locale, using default domain
             ///
@@ -370,10 +356,10 @@ namespace boost {
             {
                 return str(locale,0);
             }
-           
+
             ///
             /// Translate message to a string using locale \a locale and message domain  \a domain_id
-            /// 
+            ///
             string_type str(std::locale const &locale,std::string const &domain_id) const
             {
                 int id=0;
@@ -384,7 +370,7 @@ namespace boost {
 
             ///
             /// Translate message to a string using the default locale and message domain  \a domain_id
-            /// 
+            ///
             string_type str(std::string const &domain_id) const
             {
                 int id=0;
@@ -394,84 +380,108 @@ namespace boost {
                 return str(loc,id);
             }
 
-            
+
             ///
             /// Translate message to a string using locale \a loc and message domain index  \a id
-            /// 
+            ///
             string_type str(std::locale const &loc,int id) const
             {
-                string_type buffer;                
-                char_type const *ptr = write(loc,id,buffer);
-                if(ptr == buffer.c_str())
-                    return buffer;
-                else
-                    buffer = ptr;
-                return buffer;
+                string_type buffer;
+                view_type ptr = write(loc,id, buffer);
+                return string_type(ptr.data(), ptr.size());
+            }
+
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+            ///
+            /// Message class can be explicitly converted to string class
+            ///
+            operator string_view_type () const noexcept
+            {
+                return sv();
+            }
+
+            ///
+            /// Translate message to a string in the default global locale, using default domain
+            ///
+            string_view_type sv() const noexcept
+            {
+                return sv(std::locale(),0);
+            }
+
+            ///
+            /// Translate message to a string in the locale \a locale, using default domain
+            ///
+            string_view_type sv(std::locale const &locale) const
+            {
+                return sv(locale,0);
+            }
+
+            ///
+            /// Translate message to a string using locale \a locale and message domain  \a domain_id
+            ///
+            string_view_type sv(std::locale const &locale,std::string const &domain_id) const
+            {
+                int id=0;
+                if(std::has_facet<facet_type>(locale))
+                    id=std::use_facet<facet_type>(locale).domain(domain_id);
+                return sv(locale,id);
+            }
+
+            ///
+            /// Translate message to a string using the default locale and message domain  \a domain_id
+            ///
+            string_view_type sv(std::string const &domain_id) const
+            {
+                int id=0;
+                std::locale loc;
+                if(std::has_facet<facet_type>(loc))
+                    id=std::use_facet<facet_type>(loc).domain(domain_id);
+                return sv(loc,id);
             }
 
 
             ///
-            /// Translate message and write to stream \a out, using imbued locale and domain set to the 
+            /// Translate message to a string using locale \a loc and message domain index  \a id
+            ///
+            string_view_type sv(std::locale const &loc,int id) const
+            {
+                return write(loc,id);
+            }
+#endif
+            ///
+            /// Translate message and write to stream \a out, using imbued locale and domain set to the
             /// stream
             ///
             void write(std::basic_ostream<char_type> &out) const
             {
                 std::locale const &loc = out.getloc();
-                int id = ios_info::get(out).domain_id();
                 string_type buffer;
-                out << write(loc,id,buffer);
+                int id = ios_info::get(out).domain_id();
+                out << write(loc,id, buffer);
             }
 
         private:
-            char_type const *plural() const
+            view_type write(std::locale const &loc,int domain_id, string_type &buffer) const
             {
-                if(c_plural_)
-                    return c_plural_;
-                if(plural_.empty())
-                    return 0;
-                return plural_.c_str();
-            }
-            char_type const *context() const
-            {
-                if(c_context_)
-                    return c_context_;
-                if(context_.empty())
-                    return 0;
-                return context_.c_str();
-            }
+                view_type translated;
 
-            char_type const *id() const
-            {
-                return c_id_ ? c_id_ : id_.c_str();
-            }
-            
-            char_type const *write(std::locale const &loc,int domain_id,string_type &buffer) const
-            {
-                char_type const *translated = 0;
-                static const char_type empty_string[1] = {0};
+                if(id_.empty())
+                    return translated;
 
-                char_type const *id = this->id();
-                char_type const *context = this->context();
-                char_type const *plural = this->plural();
-                
-                if(*id == 0)
-                    return empty_string;
-                
                 facet_type const *facet = 0;
                 if(std::has_facet<facet_type>(loc))
                     facet = &std::use_facet<facet_type>(loc);
 
-                if(facet) { 
-                    if(!plural) {
-                        translated = facet->get(domain_id,context,id);
+                if(facet) {
+                    if(!plural_) {
+                        translated = facet->get(domain_id,context_,id_);
                     }
                     else {
-                        translated = facet->get(domain_id,context,id,n_);
+                        translated = facet->get(domain_id,context_,id_,n_);
                     }
                 }
-
                 if(!translated) {
-                    char_type const *msg = plural ? ( n_ == 1 ? id : plural) : id;
+                    view_type msg = plural_ ? ( n_ == 1 ? id_ : plural_) : id_;
 
                     if(facet) {
                         translated = facet->convert(msg,buffer);
@@ -483,15 +493,34 @@ namespace boost {
                 return translated;
             }
 
+            view_type write(std::locale const &loc,int domain_id) const
+            {
+                view_type translated;
+
+                if(id_.empty())
+                    return translated;
+
+                facet_type const *facet = 0;
+                if(std::has_facet<facet_type>(loc))
+                    facet = &std::use_facet<facet_type>(loc);
+
+                if(facet) {
+                    if(!plural_) {
+                        translated = facet->get(domain_id,context_,id_);
+                    }
+                    else {
+                        translated = facet->get(domain_id,context_,id_,n_);
+                    }
+                }
+                return translated;
+            }
+
             /// members
 
             int n_;
-            char_type const *c_id_;
-            char_type const *c_context_;
-            char_type const *c_plural_;
-            string_type id_;
-            string_type context_;
-            string_type plural_;
+            view_type id_;
+            view_type context_;
+            view_type plural_;
         };
 
 
@@ -531,7 +560,7 @@ namespace boost {
         /// @{
 
         ///
-        /// \brief Translate a message, \a msg is not copied 
+        /// \brief Translate a message, \a msg is not copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(CharType const *msg)
@@ -539,7 +568,7 @@ namespace boost {
             return basic_message<CharType>(msg);
         }
         ///
-        /// \brief Translate a message in context, \a msg and \a context are not copied 
+        /// \brief Translate a message in context, \a msg and \a context are not copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(   CharType const *context,
@@ -548,7 +577,7 @@ namespace boost {
             return basic_message<CharType>(context,msg);
         }
         ///
-        /// \brief Translate a plural message form, \a single and \a plural are not copied 
+        /// \brief Translate a plural message form, \a single and \a plural are not copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(   CharType const *single,
@@ -558,7 +587,7 @@ namespace boost {
             return basic_message<CharType>(single,plural,n);
         }
         ///
-        /// \brief Translate a plural message from in constext, \a context, \a single and \a plural are not copied 
+        /// \brief Translate a plural message from in constext, \a context, \a single and \a plural are not copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(   CharType const *context,
@@ -568,18 +597,18 @@ namespace boost {
         {
             return basic_message<CharType>(context,single,plural,n);
         }
-        
+
         ///
-        /// \brief Translate a message, \a msg is copied 
+        /// \brief Translate a message, \a msg is copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(std::basic_string<CharType> const &msg)
         {
             return basic_message<CharType>(msg);
         }
-        
+
         ///
-        /// \brief Translate a message in context,\a context and \a msg is copied 
+        /// \brief Translate a message in context,\a context and \a msg is copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(   std::basic_string<CharType> const &context,
@@ -588,7 +617,7 @@ namespace boost {
             return basic_message<CharType>(context,msg);
         }
         ///
-        /// \brief Translate a plural message form in constext, \a context, \a single and \a plural are copied 
+        /// \brief Translate a plural message form in constext, \a context, \a single and \a plural are copied
         ///
         template<typename CharType>
         inline basic_message<CharType> translate(   std::basic_string<CharType> const &context,
@@ -600,7 +629,7 @@ namespace boost {
         }
 
         ///
-        /// \brief Translate a plural message form, \a single and \a plural are copied 
+        /// \brief Translate a plural message form, \a single and \a plural are copied
         ///
 
         template<typename CharType>
@@ -613,8 +642,8 @@ namespace boost {
 
         /// @}
 
-        /// 
-        /// \anchor boost_locale_gettext_family \name Direct message translation functions family 
+        ///
+        /// \anchor boost_locale_gettext_family \name Direct message translation functions family
         ///
 
         ///
@@ -710,29 +739,29 @@ namespace boost {
         ///
         /// \cond INTERNAL
         ///
-        
+
         template<>
-        struct BOOST_LOCALE_DECL base_message_format<char> : public std::locale::facet 
+        struct BOOST_LOCALE_DECL base_message_format<char> : public std::locale::facet
         {
             base_message_format(size_t refs = 0) : std::locale::facet(refs)
             {
             }
             static std::locale::id id;
         };
-        
+
         template<>
-        struct BOOST_LOCALE_DECL base_message_format<wchar_t> : public std::locale::facet 
+        struct BOOST_LOCALE_DECL base_message_format<wchar_t> : public std::locale::facet
         {
             base_message_format(size_t refs = 0) : std::locale::facet(refs)
             {
             }
             static std::locale::id id;
         };
-        
+
         #ifdef BOOST_LOCALE_ENABLE_CHAR16_T
 
         template<>
-        struct BOOST_LOCALE_DECL base_message_format<char16_t> : public std::locale::facet 
+        struct BOOST_LOCALE_DECL base_message_format<char16_t> : public std::locale::facet
         {
             base_message_format(size_t refs = 0) : std::locale::facet(refs)
             {
@@ -745,14 +774,14 @@ namespace boost {
         #ifdef BOOST_LOCALE_ENABLE_CHAR32_T
 
         template<>
-        struct BOOST_LOCALE_DECL base_message_format<char32_t> : public std::locale::facet 
+        struct BOOST_LOCALE_DECL base_message_format<char32_t> : public std::locale::facet
         {
             base_message_format(size_t refs = 0) : std::locale::facet(refs)
             {
             }
             static std::locale::id id;
         };
-        
+
         #endif
 
         /// \endcond
@@ -781,17 +810,17 @@ namespace boost {
             /// \addtogroup manipulators
             ///
             /// @{
-            
+
             ///
             /// Manipulator for switching message domain in ostream,
             ///
             /// \note The returned object throws std::bad_cast if the I/O stream does not have \ref message_format facet installed
-            /// 
-            inline 
+            ///
+            inline
             #ifdef BOOST_LOCALE_DOXYGEN
             unspecified_type
             #else
-            details::set_domain 
+            details::set_domain
             #endif
             domain(std::string const &id)
             {
@@ -800,7 +829,7 @@ namespace boost {
             }
             /// @}
         } // as
-    } // locale 
+    } // locale
 } // boost
 
 #ifdef BOOST_MSVC
